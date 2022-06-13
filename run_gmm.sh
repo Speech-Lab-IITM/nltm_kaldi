@@ -4,12 +4,12 @@
 
 #Set the following flags = 1 to run that particular block of code
 data_prep=0
-prepare_lang=1
-mfcc=1
-mono=1
-tri1=1
-tri2=1
-tri3=1
+prepare_lang=0
+mfcc=0
+mono=0
+tri1=0
+tri2=0
+tri3=0
 
 dumpdir=`pwd`    #path to store features generated 
 data=data
