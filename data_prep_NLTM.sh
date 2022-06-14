@@ -13,7 +13,8 @@ fi
 mkdir -p "${home_dir}/data"
 cp -r ${espnet_dir}/* ${home_dir}/data/
 
-cat ${home_dir}/data/train/text ${home_dir}/data/dev/text ${home_dir}/data/test/text > ${home_dir}/cumulative_text
+# cat ${home_dir}/data/train/text ${home_dir}/data/dev/text ${home_dir}/data/test/text > ${home_dir}/cumulative_text
+cp ${home_dir}/data/train/text ${home_dir}/cumulative_text
 ids=$(awk '{print $1}' ${home_dir}/cumulative_text)
 ext_ids=$(sed 's/\t/@/1' ${home_dir}/cumulative_text | awk 'BEGIN{FS="@"} {print $1}')
 if [ "$ids" = "$ext_ids" ]; then
@@ -33,6 +34,7 @@ fi
 # sed 's/ /@/1' ${home_dir}/cumulative_text | awk 'BEGIN{FS="@"} {print $2}' > ${home_dir}/just_transcription
 rm ${home_dir}/cumulative_text
 grep -o -E '\w+' just_transcription | sort -u -f > uniq_word_list
+num_uniq_words=`wc -l uniq_word_list | awk '{print $1}'`
 rm ${home_dir}/just_transcription
 awk '{printf("test_%04d %s\n", NR, $0)}' ${home_dir}/uniq_word_list > ${home_dir}/phonify_text/format_word_text
 rm ${home_dir}/uniq_word_list
@@ -46,6 +48,11 @@ cd $curr_dir
 
 mkdir -p "${home_dir}/data/local/dict"
 mv ${home_dir}/data/lexicon.txt ${home_dir}/data/local/dict/lexicon.txt
+num_lex_entries=`wc -l ${home_dir}/data/local/dict/lexicon.txt | awk '{print $1}'`
+
+if [ $num_uniq_words -ne $num_lex_entries  ]; then
+    echo "All the unique words do not seem to have the phone split in the lexicon file"
+fi
 
 echo '!SIL   SIL' >> ${home_dir}/data/local/dict/lexicon.txt
 
